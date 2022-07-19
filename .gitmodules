@@ -1,0 +1,3 @@
+[submodule "StyledSwitch"]
+	path = StyledSwitch
+	url = https://github.com/albanian-xrm/PCF.StyledSwitch
