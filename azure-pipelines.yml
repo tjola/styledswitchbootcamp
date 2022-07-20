@@ -1,0 +1,79 @@
+trigger:
+- master
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: PowerPlatformToolInstaller@0
+  inputs:
+    DefaultVersion: true
+
+- checkout: self
+  submodules: true
+
+- task: Npm@1
+  displayName: 'Install NPM packages'
+  inputs:
+    command: 'install'
+
+- task: Npm@1
+  displayName: 'Run Jest Tests'
+  inputs:
+    command: 'custom'
+    customCommand: 'test'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: $(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml
+
+- script: dotnet build --configuration $(buildConfiguration)
+  workingDirectory: 'Solutions'
+  displayName: 'dotnet build -c $(buildConfiguration)'
+  
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish Artifact: Solution'
+  inputs:
+    targetPath: 'Solutions/bin/Release/Solutions.zip'
+    artifact: 'Solution'
+    publishLocation: 'pipeline'
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish Artifact: SourceMap'
+  inputs:
+    targetPath: 'out/controls/StyledSwitch/main.map'
+    artifact: 'SourceMaps'
+    publishLocation: 'pipeline'
+  
+- script: git rev-parse HEAD > ..\github.txt  
+  workingDirectory: StyledSwitch
+  displayName: 'Current GitHub CommitId'
+
+- script: git rev-parse HEAD > devops.txt  
+  displayName: 'Current DevOps CommitId'
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish Artifact: GitHub.txt'
+  inputs:
+    targetPath: 'github.txt'
+    artifact: 'GitHubCommit'
+    publishLocation: 'pipeline'
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish Artifact: DevOps.txt'
+  inputs:
+    targetPath: 'devops.txt'
+    artifact: 'DevOpsCommit'
+    publishLocation: 'pipeline'
+
+- task: PowerPlatformChecker@0
+  inputs:
+    PowerPlatformSPN: 'AlbanianXrm-DEV'
+    FilesToAnalyze: 'Solutions/bin/Release/Solutions.zip'
+    RuleSet: '083a2ef5-7e0e-4754-9d88-9455142dc08b'
+    FailOnPowerAppsCheckerAnalysisError: false
+
