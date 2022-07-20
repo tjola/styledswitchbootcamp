@@ -1,6 +1,16 @@
 {
     "extends": "./node_modules/pcf-scripts/tsconfig_base.json",
     "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "paths": {
+            "@albanian-xrm/styled-switch/*": [
+                "StyledSwitch/*"
+            ]
+        },
+        "sourceMap": true,
         "typeRoots": ["node_modules/@types"],
     }
 }
