@@ -72,7 +72,7 @@ steps:
 
 - task: PowerPlatformChecker@0
   inputs:
-    PowerPlatformSPN: 'AlbanianXrm-DEV'
+    PowerPlatformSPN: 'artjola'
     FilesToAnalyze: 'Solutions/bin/Release/Solutions.zip'
     RuleSet: '083a2ef5-7e0e-4754-9d88-9455142dc08b'
     FailOnPowerAppsCheckerAnalysisError: false
